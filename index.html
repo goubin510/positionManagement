@@ -4,11 +4,13 @@
 	<title>plop</title>
 </head>
 <body>
-	Test
-	<button onclick="addPos('flag')">Drapeau</button>
-	<button onclick="addPos('green')">Entrée de green</button>
-	<button onclick="addPos('start')">Zone de frappe</button>
+	<button onclick="addPos('basic')">Drapeau</button>
+	<button id="flag" onclick="watchPos('flag')">Drapeau</button>
+	<button id="green" onclick="watchPos('green')">Entrée de green</button>
+	<button id="start" onclick="watchPos('start')">Zone de frappe</button>
 	<div id="infoposition"></div>
+	<hr>
+	<div id="infopositionB"></div>
 </body>
 <script
   src="https://code.jquery.com/jquery-3.4.1.js"
@@ -16,6 +18,10 @@
   crossorigin="anonymous"></script>
 <script type="text/javascript">
 	//init
+	var watchType = undefined;
+	var watchVar;
+	var watchTab = [];
+
 	var type = "";
 	var pos = {
 		"old": {
@@ -61,8 +67,10 @@
 		document.getElementById("infoposition").innerHTML += "geolocation is disabled";
 	}
 
+	//process & logic
 	function log(position) {
 		console.log(type)
+		console.log(position)
 		//gestion de l'exercice
 
 		if(pos.old) {
@@ -78,6 +86,13 @@
 		maPosition(position)
 	}
 
+	function logB(position) {
+		watchTab.push(position);
+		console.log(watchTab);
+
+		maPositionB(position)
+	}
+
 	function maPosition(position) {
 		var infopos = "<p>Position déterminée : <br>";
 		infopos += "Latitude : <strong>" + position.coords.latitude + "</strong> ";
@@ -88,6 +103,16 @@
 		document.getElementById("infoposition").innerHTML += infopos;
 
 		console.log(delta());
+	}
+
+	function maPositionB(position) {
+	    var infopos = "<p>Position déterminée :\n";
+	    infopos += "Latitude : <strong>"+position.coords.latitude +"</strong> ";
+	    infopos += "Longitude: <strong>"+position.coords.longitude+"</strong> ";
+	    infopos += "Altitude : <strong>"+position.coords.altitude +"</strong> ";
+	    infopos += "Vitesse  : <strong>"+position.coords.speed +"</strong> ";
+		infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong></p>";
+	    document.getElementById("infopositionB").innerHTML += infopos;
 	}
 
 	function delta() {
@@ -114,6 +139,22 @@
 		type = evt;
 		if(navigator.geolocation)
 		navigator.geolocation.getCurrentPosition(log);
+	}
+
+	function watchPos(evt) {
+		if(evt == watchType) {
+			watchType = undefined;
+			console.log("off", evt)
+
+			$("button").attr("disabled", false)
+
+		}else {
+			watchVar = navigator.geolocation.watchPosition(logB);
+			watchType = evt
+
+			$("button").attr("disabled", true)
+			$("#" + evt + "").attr("disabled", false)
+		}
 	}
 
 	addPos('start');
