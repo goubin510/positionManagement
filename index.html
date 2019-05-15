@@ -21,6 +21,7 @@
 	var watchType = undefined;
 	var watchVar;
 	var watchTab = [];
+	var deltaBase = ['flag', 'green', 'start'];
 
 	var type = "";
 	var pos = {
@@ -111,7 +112,8 @@
 	    infopos += "Longitude: <strong>"+position.coords.longitude+"</strong> ";
 	    infopos += "Altitude : <strong>"+position.coords.altitude +"</strong> ";
 	    infopos += "Vitesse  : <strong>"+position.coords.speed +"</strong> ";
-		infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong></p>";
+		infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong>";
+		infopos += "Dist : <strong>" + delta() + "</strong> </p>";
 	    document.getElementById("infopositionB").innerHTML += infopos;
 	}
 
@@ -135,6 +137,29 @@
 		}
 	}
 
+	function deltaB() {
+		if(watchType == 'flag')
+			return 0
+
+		if ((exercice[deltaBase[deltaBase.indexof(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexof(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
+			return 0;
+		}
+		else {
+			var radlat1 = Math.PI * exercice[deltaBase[deltaBase.indexof(watchType)-1]].lat/180;
+			var radlat2 = Math.PI * watchTab[watchTab.length-1].coords.latitude/180;
+			var theta = exercice[deltaBase[deltaBase.indexof(watchType)-1]].long-watchTab[watchTab.length-1].coords.longitude;
+			var radtheta = Math.PI * theta/180;
+			var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+			if (dist > 1) {
+				dist = 1;
+			}
+			dist = Math.acos(dist);
+			dist = dist * 180/Math.PI;
+			dist = dist * 60 * 1.1515*1.609344*1000;
+			return dist;
+		}
+	}
+
 	function addPos(evt){
 		type = evt;
 		if(navigator.geolocation)
@@ -144,17 +169,22 @@
 	function watchPos(evt) {
 		if(evt == watchType) {
 			watchType = undefined;
+			watchTab = [];
 			navigator.geolocation.clearWatch(watchVar);
 
 			$("button").attr("disabled", false)
 
 		}else {
-			watchVar = navigator.geolocation.watchPosition(logB, {maximumAge:0, enableHighAccuracy :true});
+			watchVar = navigator.geolocation.watchPosition(logB, err, {maximumAge:0, enableHighAccuracy :true});
 			watchType = evt
 
 			$("button").attr("disabled", true)
 			$("#" + evt + "").attr("disabled", false)
 		}
+	}
+
+	function err (evt) {
+		document.getElementById("infopositionB").innerHTML += err;
 	}
 
 	addPos('start');
