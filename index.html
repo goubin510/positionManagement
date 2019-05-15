@@ -15,6 +15,7 @@
   integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
   crossorigin="anonymous"></script>
 <script type="text/javascript">
+	//init
 	var type = "";
 	var pos = {
 		"old": {
@@ -51,15 +52,16 @@
 
 	}
 
+	//check
 	console.log('js: ON');
-
 	if(navigator.geolocation) {
 		console.log('geo: ON')
 	} else {
 		console.log('geo: OFF')
+		document.getElementById("infoposition").innerHTML += "geolocation is disabled";
 	}
 
-	function delta(position) {
+	function log(position) {
 		console.log(type)
 		//gestion de l'exercice
 
@@ -77,18 +79,41 @@
 	}
 
 	function maPosition(position) {
-		var infopos = "<p>Position déterminée :\n";
-		infopos += "Latitude : " + position.coords.latitude + "\n";
-		infopos += "Longitude: " + position.coords.longitude + "\n";
-		infopos += "Altitude : " + position.coords.altitude + "\n";
-		infopos += "Accuracy : " + position.coords.accuracy + "\n</p>";
+		var infopos = "<p>Position déterminée : <br>";
+		infopos += "Latitude : <strong>" + position.coords.latitude + "</strong> ";
+		infopos += "Longitude: <strong>" + position.coords.longitude + "</strong> ";
+		infopos += "Altitude : <strong>" + position.coords.altitude + "</strong> ";
+		infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong> ";
+		infopos += "Dist : <strong>" + delta() + "</strong> </p>";
 		document.getElementById("infoposition").innerHTML += infopos;
+
+		console.log(delta());
+	}
+
+	function delta() {
+		if (((pos.old.lat == pos.new.lat) && (pos.old.long == pos.new.long)) || !pos.old.lat) {
+			return 0;
+		}
+		else {
+			var radlat1 = Math.PI * pos.old.lat/180;
+			var radlat2 = Math.PI * pos.new.lat/180;
+			var theta = pos.old.long-pos.new.long;
+			var radtheta = Math.PI * theta/180;
+			var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+			if (dist > 1) {
+				dist = 1;
+			}
+			dist = Math.acos(dist);
+			dist = dist * 180/Math.PI;
+			dist = dist * 60 * 1.1515*1.609344*1000;
+			return dist;
+		}
 	}
 
 	function addPos(evt){
 		type = evt;
 		if(navigator.geolocation)
-		navigator.geolocation.getCurrentPosition(delta);
+		navigator.geolocation.getCurrentPosition(log);
 	}
 
 	addPos('start');
