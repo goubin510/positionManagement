@@ -5,8 +5,9 @@
 </head>
 <body>
 	Test
-	<button onclick="addPos">new</button>
-	<button onclick="addPos()">newB</button>
+	<button onclick="addPos('flag')">Drapeau</button>
+	<button onclick="addPos('green')">Entrée de green</button>
+	<button onclick="addPos('start')">Zone de frappe</button>
 	<div id="infoposition"></div>
 </body>
 <script
@@ -14,15 +15,40 @@
   integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
   crossorigin="anonymous"></script>
 <script type="text/javascript">
+	var type = "";
 	var pos = {
 		"old": {
 			"lat": undefined,
-			"long": undefined
+			"long": undefined,
+			"alt": undefined
 		},
 		"new": {
 			"lat": undefined,
-			"long": undefined
+			"long": undefined,
+			"alt": undefined
+		},
+		"delta": {
+			"dist": 0,
+			"alt": 0
 		}
+	}
+	var exercice = {
+		"flag": {
+			"lat": undefined,
+			"long": undefined,
+			"alt": undefined
+		},
+		"green": {
+			"lat": undefined,
+			"long": undefined,
+			"alt": undefined
+		},
+		"start": {
+			"lat": undefined,
+			"long": undefined,
+			"alt": undefined
+		}
+
 	}
 
 	console.log('js: ON');
@@ -33,20 +59,39 @@
 		console.log('geo: OFF')
 	}
 
-function maPosition(position) {
-	var infopos = "<p>Position déterminée :\n";
-	infopos += "Latitude : "+position.coords.latitude +"\n";
-	infopos += "Longitude: "+position.coords.longitude+"\n";
-	infopos += "Altitude : "+position.coords.altitude +"\n</p>";
-	document.getElementById("infoposition").innerHTML += infopos;
-}
+	function delta(position) {
+		console.log(type)
+		//gestion de l'exercice
 
-function addPos(){
-	if(navigator.geolocation)
-	navigator.geolocation.getCurrentPosition(maPosition);
-}
+		if(pos.old) {
+			pos.old.lat = pos.new.lat;
+			pos.old.long = pos.new.long;
+			pos.old.alt = pos.new.alt;
+		}
 
-addPos();
+		pos.new.lat = position.coords.latitude;
+		pos.new.long = position.coords.longitude;
+		pos.new.alt = position.coords.altitude;
+
+		maPosition(position)
+	}
+
+	function maPosition(position) {
+		var infopos = "<p>Position déterminée :\n";
+		infopos += "Latitude : " + position.coords.latitude + "\n";
+		infopos += "Longitude: " + position.coords.longitude + "\n";
+		infopos += "Altitude : " + position.coords.altitude + "\n";
+		infopos += "Accuracy : " + position.coords.accuracy + "\n</p>";
+		document.getElementById("infoposition").innerHTML += infopos;
+	}
+
+	function addPos(evt){
+		type = evt;
+		if(navigator.geolocation)
+		navigator.geolocation.getCurrentPosition(delta);
+	}
+
+	addPos('start');
 
 </script>
 </html>
