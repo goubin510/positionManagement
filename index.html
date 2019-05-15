@@ -60,6 +60,7 @@
 	}
 
 	//check
+	console.log("V0");
 	console.log('js: ON');
 	if(navigator.geolocation) {
 		console.log('geo: ON')
@@ -168,6 +169,7 @@
 
 	function watchPos(evt) {
 		if(evt == watchType) {
+			save();
 			watchType = undefined;
 			watchTab = [];
 			navigator.geolocation.clearWatch(watchVar);
@@ -185,6 +187,12 @@
 
 	function err (evt) {
 		document.getElementById("infopositionB").innerHTML += err;
+	}
+
+	function save() {
+		exercice[watchType].lat = watchTab[watchTab.length-1].coords.latitude;
+		exercice[watchType].long = watchTab[watchTab.length-1].coords.longitude;
+		exercice[watchType].alt = watchTab[watchTab.length-1].coords.altitude;
 	}
 
 	addPos('start');
