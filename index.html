@@ -5,5 +5,48 @@
 </head>
 <body>
 	Test
+	<button onclick="addPos">new</button>
+	<button onclick="addPos()">newB</button>
+	<div id="infoposition"></div>
 </body>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<script type="text/javascript">
+	var pos = {
+		"old": {
+			"lat": undefined,
+			"long": undefined
+		},
+		"new": {
+			"lat": undefined,
+			"long": undefined
+		}
+	}
+
+	console.log('js: ON');
+
+	if(navigator.geolocation) {
+		console.log('geo: ON')
+	} else {
+		console.log('geo: OFF')
+	}
+
+function maPosition(position) {
+	var infopos = "<p>Position déterminée :\n";
+	infopos += "Latitude : "+position.coords.latitude +"\n";
+	infopos += "Longitude: "+position.coords.longitude+"\n";
+	infopos += "Altitude : "+position.coords.altitude +"\n</p>";
+	document.getElementById("infoposition").innerHTML += infopos;
+}
+
+function addPos(){
+	if(navigator.geolocation)
+	navigator.geolocation.getCurrentPosition(maPosition);
+}
+
+addPos();
+
+</script>
 </html>
