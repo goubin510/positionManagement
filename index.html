@@ -144,12 +144,12 @@
 	function watchPos(evt) {
 		if(evt == watchType) {
 			watchType = undefined;
-			console.log("off", evt)
+			navigator.geolocation.clearWatch(watchVar);
 
 			$("button").attr("disabled", false)
 
 		}else {
-			watchVar = navigator.geolocation.watchPosition(logB);
+			watchVar = navigator.geolocation.watchPosition(logB, {maximumAge:0, enableHighAccuracy :true});
 			watchType = evt
 
 			$("button").attr("disabled", true)
