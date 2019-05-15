@@ -60,7 +60,7 @@
 	}
 
 	//check
-	console.log("V0");
+	console.log("V0.1");
 	console.log('js: ON');
 	if(navigator.geolocation) {
 		console.log('geo: ON')
@@ -142,13 +142,13 @@
 		if(watchType == 'flag')
 			return 0
 
-		if ((exercice[deltaBase[deltaBase.indexof(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexof(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
+		if ((exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
 			return 0;
 		}
 		else {
-			var radlat1 = Math.PI * exercice[deltaBase[deltaBase.indexof(watchType)-1]].lat/180;
+			var radlat1 = Math.PI * exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat/180;
 			var radlat2 = Math.PI * watchTab[watchTab.length-1].coords.latitude/180;
-			var theta = exercice[deltaBase[deltaBase.indexof(watchType)-1]].long-watchTab[watchTab.length-1].coords.longitude;
+			var theta = exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long-watchTab[watchTab.length-1].coords.longitude;
 			var radtheta = Math.PI * theta/180;
 			var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
 			if (dist > 1) {
