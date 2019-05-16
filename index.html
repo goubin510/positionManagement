@@ -89,7 +89,7 @@
 	</body>
 	<script type="text/javascript">
 		//version
-		console.log("V0.2");
+		console.log("V0.2.1");
 
 		//init
 		var watchType = undefined;
@@ -212,6 +212,9 @@
 				dist = Math.acos(dist);
 				dist = dist * 180/Math.PI;
 				dist = dist * 60 * 1.1515*1.609344*1000;
+
+				dist = Math.round(dist*100)/100;
+				
 				return dist;
 			}
 		}
