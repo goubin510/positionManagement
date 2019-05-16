@@ -8,36 +8,34 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-<!-- 		<style type="text/css">
-			.row {
-				border-style: solid;
-				border-width: 1px;
-				border-color: red; 
-			}
-			.col {
-				border-style: solid;
-				border-width: 1px;
-				border-color: blue; 
-			}
-		</style> -->
 	</head>
 	<body>
 		<div class="row">
 			<div class="col">
-				<button class="btn" id="flag" onclick="watchPos('flag')">Drapeau</button>
-				<button class="btn" id="green" onclick="watchPos('green')">Entrée de green</button>
-				<button class="btn" id="start" onclick="watchPos('start')">Zone de frappe</button>
-				<div id="infoposition"></div>
-				<hr>
-				<div id="infopositionB"></div>
+				<h4>Définir les zones :</h4>
+			</div>
+
+			<div class="col">
+				<button class="btn btn-primary btn-header" id="flag" onclick="watchPos('flag')">Drapeau</button>
+				<button class="btn btn-primary btn-header" id="green" onclick="watchPos('green')">Entrée de green</button>
+				<button class="btn btn-primary btn-header" id="start" onclick="watchPos('start')">Zone de frappe</button>
 			</div>
 		</div>
 
 		<div class="row">
-			<div class="col">Flag : <span id="flagSpan"></span> m.</div>
-			<div class="col">Green : <span id="greenSpan"></span> m.</div>
-			<div class="col">start : <span id="startSpan"></span> m.</div>
+			<div class="col">
+				<hr>
+				<div id="infoposition"></div>
+				<hr>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<p>Flag : <span id="flagSpan"></span></p>
+				<p>Green : <span id="greenSpan"></span> m.</p>
+				<p>start : <span id="startSpan"></span> m.</p>
+			</div>
 
 			<div class="col">
 				<select id="Lie" class="custom-select">
@@ -45,9 +43,11 @@
 					<option value="2">Rough</option>
 					<option value="3">Bunker</option>
 				</select>
-			</div>
 
-			<div class="col">
+				<button id="evalExercice" class="btn btn-info" disabled>Evaluer la situation</button>
+
+				<hr>
+
 				<select id="exercice" class="custom-select" onchange="simIndex()">
 					<option value="0" disabled="">auto</option>
 					<option value="1">Chip court - 10m (7m min)</option>
@@ -61,11 +61,9 @@
 					<option value="9">Bunker long - 25m (10m max)</option>
 				</select>
 			</div>
-
-			<div class="col">
-				<button class="btn">Evaluate exercice</button>
-			</div>
 		</div>
+
+		<hr>
 
 		<div class="row">
 			<div class="col">
@@ -83,13 +81,13 @@
 			</div>
 
 			<div class="col">
-				<button class="btn">Submit</button>
+				<button class="btn btn-success">Publier</button>
 			</div>
 		</div>
 	</body>
 	<script type="text/javascript">
 		//version
-		console.log("V0.2.1");
+		console.log("V0.3");
 
 		//init
 		var watchType = undefined;
@@ -152,8 +150,8 @@
 		    infopos += "Vitesse  : <strong>"+position.coords.speed +"</strong> ";
 			infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong> ";
 			infopos += "Dist : <strong>" + delta() + "</strong> </p>";
-			infopos += "<a target='_blank' href='https://www.google.com/maps/search/?api=1&query=" + position.coords.latitude + "," + position.coords.longitude + "'>Test</a>";
-		    document.getElementById("infopositionB").innerHTML = infopos;
+			infopos += "<button class='btn btn-link' onclick='mapSelector(" + position.coords.latitude + "," + position.coords.longitude + ")'>Test</button>";
+		    document.getElementById("infoposition").innerHTML = infopos;
 		}
 
 		function watchPos(evt) {
@@ -164,18 +162,23 @@
 				navigator.geolocation.clearWatch(watchVar);
 
 				$("button").attr("disabled", false)
+				$(".btn-header").removeClass("btn-secondary").removeClass("btn-warning")
+				$(".btn-header").addClass("btn-primary")
 
 			}else {
 				watchVar = navigator.geolocation.watchPosition(log, err, {maximumAge:0, enableHighAccuracy :true});
 				watchType = evt
 
 				$("button").attr("disabled", true)
+				$(".btn-header").toggleClass("btn-primary").toggleClass("btn-secondary");
+
 				$("#" + evt + "").attr("disabled", false)
+				$("#" + evt + "").toggleClass("btn-secondary").toggleClass("btn-warning")
 			}
 		}
 
 		function err(evt) {
-			document.getElementById("infopositionB").innerHTML += err;
+			document.getElementById("infoposition").innerHTML += err;
 
 			$("button").attr("disabled", false)
 		}
@@ -193,9 +196,19 @@
 				document.getElementById("simIndex").innerHTML = "<strong>" + dict[$("#exercice").val()-1][$("#score").val()] + "</strong>";
 		}
 
+		function mapSelector(lat, long) {
+		  if((navigator.platform.indexOf("iPhone") != -1) || 
+		     (navigator.platform.indexOf("iPod") != -1) || 
+		     (navigator.platform.indexOf("iPad") != -1))
+		    window.open("maps://maps.google.com/maps?daddr=" + lat + "," + long + "&amp;ll=");
+
+		  else
+		    window.open("https://maps.google.com/maps?daddr=" + lat + "," + long + "&amp;ll=");
+		}
+
 		function delta() {
 			if(watchType == 'flag')
-				return 0
+				return "OK"
 
 			if ((exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
 				return 0;
