@@ -1,201 +1,221 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>plop</title>
-</head>
-<body>
-	<button onclick="addPos('basic')">Drapeau</button>
-	<button id="flag" onclick="watchPos('flag')">Drapeau</button>
-	<button id="green" onclick="watchPos('green')">Entrée de green</button>
-	<button id="start" onclick="watchPos('start')">Zone de frappe</button>
-	<div id="infoposition"></div>
-	<hr>
-	<div id="infopositionB"></div>
-</body>
-<script
-  src="https://code.jquery.com/jquery-3.4.1.js"
-  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
-  crossorigin="anonymous"></script>
-<script type="text/javascript">
-	//init
-	var watchType = undefined;
-	var watchVar;
-	var watchTab = [];
-	var deltaBase = ['flag', 'green', 'start'];
+	<head>
+		<title>plop</title>
 
-	var type = "";
-	var pos = {
-		"old": {
-			"lat": undefined,
-			"long": undefined,
-			"alt": undefined
-		},
-		"new": {
-			"lat": undefined,
-			"long": undefined,
-			"alt": undefined
-		},
-		"delta": {
-			"dist": 0,
-			"alt": 0
-		}
-	}
-	var exercice = {
-		"flag": {
-			"lat": undefined,
-			"long": undefined,
-			"alt": undefined
-		},
-		"green": {
-			"lat": undefined,
-			"long": undefined,
-			"alt": undefined
-		},
-		"start": {
-			"lat": undefined,
-			"long": undefined,
-			"alt": undefined
-		}
+		<!--Bootstrap CSS ; jQuery ; Popper JS ; Bootstrap JS-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-	}
-
-	//check
-	console.log("V0.1");
-	console.log('js: ON');
-	if(navigator.geolocation) {
-		console.log('geo: ON')
-	} else {
-		console.log('geo: OFF')
-		document.getElementById("infoposition").innerHTML += "geolocation is disabled";
-	}
-
-	//process & logic
-	function log(position) {
-		console.log(type)
-		console.log(position)
-		//gestion de l'exercice
-
-		if(pos.old) {
-			pos.old.lat = pos.new.lat;
-			pos.old.long = pos.new.long;
-			pos.old.alt = pos.new.alt;
-		}
-
-		pos.new.lat = position.coords.latitude;
-		pos.new.long = position.coords.longitude;
-		pos.new.alt = position.coords.altitude;
-
-		maPosition(position)
-	}
-
-	function logB(position) {
-		watchTab.push(position);
-		console.log(watchTab);
-
-		maPositionB(position)
-	}
-
-	function maPosition(position) {
-		var infopos = "<p>Position déterminée : <br>";
-		infopos += "Latitude : <strong>" + position.coords.latitude + "</strong> ";
-		infopos += "Longitude: <strong>" + position.coords.longitude + "</strong> ";
-		infopos += "Altitude : <strong>" + position.coords.altitude + "</strong> ";
-		infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong> ";
-		infopos += "Dist : <strong>" + delta() + "</strong> </p>";
-		document.getElementById("infoposition").innerHTML += infopos;
-
-		console.log(delta());
-	}
-
-	function maPositionB(position) {
-	    var infopos = "<p>Position déterminée :\n";
-	    infopos += "Latitude : <strong>"+position.coords.latitude +"</strong> ";
-	    infopos += "Longitude: <strong>"+position.coords.longitude+"</strong> ";
-	    infopos += "Altitude : <strong>"+position.coords.altitude +"</strong> ";
-	    infopos += "Vitesse  : <strong>"+position.coords.speed +"</strong> ";
-		infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong>";
-		infopos += "Dist : <strong>" + deltaB() + "</strong> </p>";
-	    document.getElementById("infopositionB").innerHTML += infopos;
-	}
-
-	function delta() {
-		if (((pos.old.lat == pos.new.lat) && (pos.old.long == pos.new.long)) || !pos.old.lat) {
-			return 0;
-		}
-		else {
-			var radlat1 = Math.PI * pos.old.lat/180;
-			var radlat2 = Math.PI * pos.new.lat/180;
-			var theta = pos.old.long-pos.new.long;
-			var radtheta = Math.PI * theta/180;
-			var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-			if (dist > 1) {
-				dist = 1;
+<!-- 		<style type="text/css">
+			.row {
+				border-style: solid;
+				border-width: 1px;
+				border-color: red; 
 			}
-			dist = Math.acos(dist);
-			dist = dist * 180/Math.PI;
-			dist = dist * 60 * 1.1515*1.609344*1000;
-			return dist;
-		}
-	}
-
-	function deltaB() {
-		if(watchType == 'flag')
-			return 0
-
-		if ((exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
-			return 0;
-		}
-		else {
-			var radlat1 = Math.PI * exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat/180;
-			var radlat2 = Math.PI * watchTab[watchTab.length-1].coords.latitude/180;
-			var theta = exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long-watchTab[watchTab.length-1].coords.longitude;
-			var radtheta = Math.PI * theta/180;
-			var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-			if (dist > 1) {
-				dist = 1;
+			.col {
+				border-style: solid;
+				border-width: 1px;
+				border-color: blue; 
 			}
-			dist = Math.acos(dist);
-			dist = dist * 180/Math.PI;
-			dist = dist * 60 * 1.1515*1.609344*1000;
-			return dist;
+		</style> -->
+	</head>
+	<body>
+		<div class="row">
+			<div class="col">
+				<button class="btn" id="flag" onclick="watchPos('flag')">Drapeau</button>
+				<button class="btn" id="green" onclick="watchPos('green')">Entrée de green</button>
+				<button class="btn" id="start" onclick="watchPos('start')">Zone de frappe</button>
+				<div id="infoposition"></div>
+				<hr>
+				<div id="infopositionB"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">Flag : <span id="flagSpan"></span> m.</div>
+			<div class="col">Green : <span id="greenSpan"></span> m.</div>
+			<div class="col">start : <span id="startSpan"></span> m.</div>
+
+			<div class="col">
+				<select id="Lie" class="custom-select">
+					<option value="1">Fairway</option>
+					<option value="2">Rough</option>
+					<option value="3">Bunker</option>
+				</select>
+			</div>
+
+			<div class="col">
+				<select id="exercice" class="custom-select" onchange="simIndex()">
+					<option value="0" disabled="">auto</option>
+					<option value="1">Chip court - 10m (7m min)</option>
+					<option value="2">Chip Long - 20m (15m min)</option>
+					<option value="3">App Levée - 15m (4m max)</option>
+					<option value="4">App mi-D - 15m (10m max)</option>
+					<option value="5">Wedging - 30m (15m min)</option>
+					<option value="6">Wedging - 50m (15m min)</option>
+					<option value="7">Rough App - 15m (10m max)</option>
+					<option value="8">Bunker court - 10m (3m max)</option>
+					<option value="9">Bunker long - 25m (10m max)</option>
+				</select>
+			</div>
+
+			<div class="col">
+				<button class="btn">Evaluate exercice</button>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<input type="number" class="form-control" id="score" placeholder="score" onchange="simIndex()">
+			</div>
+
+			<div class="col">
+				Simulated index : <strong id="simIndex"></strong>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<input type="text" class="form-control" id="Pseudo" placeholder="ID">
+			</div>
+
+			<div class="col">
+				<button class="btn">Submit</button>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//version
+		console.log("V0.2");
+
+		//init
+		var watchType = undefined;
+		var watchVar;
+		var watchTab = [];
+		var deltaBase = ['flag', 'green', 'start'];
+
+		var type = "";
+		var dict = [
+			[40,38,36,34,32,30,28,26,24,22,20,18,16,14,12,10,8,6,4,2,0,-2,-4,-6,-8],
+			[38,35,32,29,26,24,22,20,18,16,14,12,10,8,6,4,2,0,-2,-5,-8],
+			[37,32,27,23,19,16,13,10,7,4,1,-2,-4,-6,-8],
+			[39,36,33,29,25,21,18,15,12,9,6,4,2,0,-2,-4,-5,-6,-7,-8],
+			[40,37,34,31,28,25,22,19,16,13,10,7,4,1,-2,-5,-8],
+			[39,34,29,25,21,17,13,10,7,5,3,0,-2,-4,-5,-6,-7,-8],
+			[38,33,29,26,23,20,17,14,11,8,5,2,0,-2,-4,-6,-7,-8],
+			[39,34,29,24,20,17,14,11,8,5,3,1,-1,-3,-5,-7,-8],
+			[38,32,26,21,16,11,8,5,2,-1,-4,-6,-8]
+		]
+		var exercice = {
+			"flag": {
+				"lat": undefined,
+				"long": undefined,
+				"alt": undefined
+			},
+			"green": {
+				"lat": undefined,
+				"long": undefined,
+				"alt": undefined
+			},
+			"start": {
+				"lat": undefined,
+				"long": undefined,
+				"alt": undefined
+			}
 		}
-	}
 
-	function addPos(evt){
-		type = evt;
-		if(navigator.geolocation)
-		navigator.geolocation.getCurrentPosition(log);
-	}
+		//check
+		console.log('js: ON');
+		if(navigator.geolocation) {
+			console.log('geo: ON')
+		} else {
+			console.log('geo: OFF')
+			document.getElementById("infoposition").innerHTML += "geolocation is disabled";
+		}
 
-	function watchPos(evt) {
-		if(evt == watchType) {
-			save();
-			watchType = undefined;
-			watchTab = [];
-			navigator.geolocation.clearWatch(watchVar);
+		//functions
+		function log(position) {
+			watchTab.push(position);
+			console.log(watchTab);
+
+			maPosition(position)
+		}
+
+		function maPosition(position) {
+		    var infopos = "<p>Position déterminée (" + watchTab.length + ") :\n";
+		    infopos += "Latitude : <strong>"+position.coords.latitude +"</strong> ";
+		    infopos += "Longitude: <strong>"+position.coords.longitude+"</strong> ";
+		    infopos += "Altitude : <strong>"+position.coords.altitude +"</strong> ";
+		    infopos += "Vitesse  : <strong>"+position.coords.speed +"</strong> ";
+			infopos += "Accuracy : <strong>" + position.coords.accuracy + "</strong> ";
+			infopos += "Dist : <strong>" + delta() + "</strong> </p>";
+			infopos += "<a target='_blank' href='https://www.google.com/maps/search/?api=1&query=" + position.coords.latitude + "," + position.coords.longitude + "'>Test</a>";
+		    document.getElementById("infopositionB").innerHTML = infopos;
+		}
+
+		function watchPos(evt) {
+			if(evt == watchType) {
+				save();
+				watchType = undefined;
+				watchTab = [];
+				navigator.geolocation.clearWatch(watchVar);
+
+				$("button").attr("disabled", false)
+
+			}else {
+				watchVar = navigator.geolocation.watchPosition(log, err, {maximumAge:0, enableHighAccuracy :true});
+				watchType = evt
+
+				$("button").attr("disabled", true)
+				$("#" + evt + "").attr("disabled", false)
+			}
+		}
+
+		function err(evt) {
+			document.getElementById("infopositionB").innerHTML += err;
 
 			$("button").attr("disabled", false)
-
-		}else {
-			watchVar = navigator.geolocation.watchPosition(logB, err, {maximumAge:0, enableHighAccuracy :true});
-			watchType = evt
-
-			$("button").attr("disabled", true)
-			$("#" + evt + "").attr("disabled", false)
 		}
-	}
 
-	function err (evt) {
-		document.getElementById("infopositionB").innerHTML += err;
-	}
+		function save() {
+			exercice[watchType].lat = watchTab[watchTab.length-1].coords.latitude;
+			exercice[watchType].long = watchTab[watchTab.length-1].coords.longitude;
+			exercice[watchType].alt = watchTab[watchTab.length-1].coords.altitude;
 
-	function save() {
-		exercice[watchType].lat = watchTab[watchTab.length-1].coords.latitude;
-		exercice[watchType].long = watchTab[watchTab.length-1].coords.longitude;
-		exercice[watchType].alt = watchTab[watchTab.length-1].coords.altitude;
-	}
+			$("#" + watchType + "Span").text(delta());
+		}
 
-	addPos('start');
+		function simIndex() {
+			if(dict[$("#exercice").val()-1][$("#score").val()] != undefined)
+				document.getElementById("simIndex").innerHTML = "<strong>" + dict[$("#exercice").val()-1][$("#score").val()] + "</strong>";
+		}
 
-</script>
+		function delta() {
+			if(watchType == 'flag')
+				return 0
+
+			if ((exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
+				return 0;
+			}
+			else {
+				var radlat1 = Math.PI * exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat/180;
+				var radlat2 = Math.PI * watchTab[watchTab.length-1].coords.latitude/180;
+				var theta = exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long-watchTab[watchTab.length-1].coords.longitude;
+				var radtheta = Math.PI * theta/180;
+				var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+				if (dist > 1) {
+					dist = 1;
+				}
+				dist = Math.acos(dist);
+				dist = dist * 180/Math.PI;
+				dist = dist * 60 * 1.1515*1.609344*1000;
+				return dist;
+			}
+		}
+
+
+	</script>
 </html>
