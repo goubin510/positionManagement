@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>plop</title>
+		<title>Appraoch Training</title>
 
 		<!--Bootstrap CSS ; jQuery ; Popper JS ; Bootstrap JS-->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -9,7 +9,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 	</head>
-	<body>
+	<body>		
 		<div class="row">
 			<div class="col">
 				<h4>Définir les zones :</h4>
@@ -34,7 +34,7 @@
 			<div class="col">
 				<p>Flag : <span id="flagSpan"></span></p>
 				<p>Green : <span id="greenSpan"></span> m.</p>
-				<p>start : <span id="startSpan"></span> m.</p>
+				<p>Start : <span id="startSpan"></span> m.</p>
 			</div>
 
 			<div class="col">
@@ -60,6 +60,12 @@
 					<option value="8">Bunker court - 10m (3m max)</option>
 					<option value="9">Bunker long - 25m (10m max)</option>
 				</select>
+
+				<input type="number" class="form-control" id="aimIndex" placeholder="Aim index" onchange="aimedScore()">
+
+				<p>
+					Score à atteindre : <span id="aimedScore"></span>
+				</p>
 			</div>
 		</div>
 
@@ -87,7 +93,7 @@
 	</body>
 	<script type="text/javascript">
 		//version
-		console.log("V0.3");
+		console.log("V0.4");
 
 		//init
 		var watchType = undefined;
@@ -142,6 +148,22 @@
 			maPosition(position)
 		}
 
+		function aimedScore() {
+			var plop = [];
+
+			plop.push(parseInt($("#exercice").val())-1);
+			plop.push(parseInt($("#aimIndex").val()));
+
+			for (var i = dict[plop[0]].length - 1; i >= 0; i--) {
+				plop[2] = i;
+
+				if(dict[plop[0]][i] >= plop[1])
+					break;
+			}
+
+			document.getElementById("aimedScore").innerHTML = "<strong>" + plop[2] + "</strong>";
+		}
+
 		function maPosition(position) {
 		    var infopos = "<p>Position déterminée (" + watchTab.length + ") :\n";
 		    infopos += "Latitude : <strong>"+position.coords.latitude +"</strong> ";
@@ -194,6 +216,8 @@
 		function simIndex() {
 			if(dict[$("#exercice").val()-1][$("#score").val()] != undefined)
 				document.getElementById("simIndex").innerHTML = "<strong>" + dict[$("#exercice").val()-1][$("#score").val()] + "</strong>";
+
+			aimedScore()
 		}
 
 		function mapSelector(lat, long) {
