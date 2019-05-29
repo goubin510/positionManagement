@@ -39,17 +39,16 @@
 
 			<div class="col">
 				<select id="Lie" class="custom-select">
-					<option value="1">Fairway</option>
-					<option value="2">Rough</option>
-					<option value="3">Bunker</option>
+					<option value="0">Fairway</option>
+					<option value="1">Rough</option>
+					<option value="2">Bunker</option>
 				</select>
 
-				<button id="evalExercice" class="btn btn-info" disabled>Evaluer la situation</button>
+				<button id="evalExercice" class="btn btn-info" onclick="evalExercice()">Evaluer la situation</button>
 
 				<hr>
 
 				<select id="exercice" class="custom-select" onchange="simIndex()">
-					<option value="0" disabled="">auto</option>
 					<option value="1">Chip court - 10m (7m min)</option>
 					<option value="2">Chip Long - 20m (15m min)</option>
 					<option value="3">App Levée - 15m (4m max)</option>
@@ -230,12 +229,28 @@
 		    window.open("https://maps.google.com/maps?daddr=" + lat + "," + long + "&amp;ll=");
 		}
 
+		function evalExercice() {
+			var data = {
+				d: $("#greenSpan").text(),
+				D: $("#startSpan").text(),
+				l: $("#Lie").val()
+			}
+
+			console.log(data);
+
+			$.post( "http://localhost:3000/test", data)
+				.done(function(data) {
+					console.log(data)
+				});
+		}
+
 		function delta() {
 			if(watchType == 'flag')
 				return "OK"
 
 			if ((exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat == watchTab[watchTab.length-1].coords.latitude) && (exercice[deltaBase[deltaBase.indexOf(watchType)-1]].long == watchTab[watchTab.length-1].coords.longitude)) {
-				return 0;
+				// return 0;
+				return 5;
 			}
 			else {
 				var radlat1 = Math.PI * exercice[deltaBase[deltaBase.indexOf(watchType)-1]].lat/180;

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Appraoch Training</title>
+
+		<!--Bootstrap CSS ; jQuery ; Popper JS ; Bootstrap JS-->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+
+		<style type="text/css">
+			.headTitle .bot {
+				padding-top: 50%;
+			}
+		</style>
+	</head>
+	<body>		
+		<div class="row headTitle">
+			<div class="col">
+				<div class="jumbotron">
+					<div class="container">
+						<h1 class="display-1">Dave Pelz</h1>
+
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+								<a class="nav-link active" data-toggle="tab" href="#Approach">Approches</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#Putt">Putt</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" data-toggle="tab" href="#Chart">Chart</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<div class="tab-content">
+					<div class="tab-pane active container" id="Approach">
+						<form class="form-group">
+							<select id="exercice" class="custom-select" onchange="simIndex()">
+								<option value="1">Chip court - 10m (7m min)</option>
+								<option value="2">Chip Long - 20m (15m min)</option>
+								<option value="3">App Levée - 15m (4m max)</option>
+								<option value="4">App mi-D - 15m (10m max)</option>
+								<option value="5">Wedging - 30m (15m min)</option>
+								<option value="6">Wedging - 50m (15m min)</option>
+								<option value="7">Rough App - 15m (10m max)</option>
+								<option value="8">Bunker court - 10m (3m max)</option>
+								<option value="9">Bunker long - 25m (10m max)</option>
+							</select>
+						</form>
+					</div>
+
+					<div class="tab-pane container" id="Putt">
+						<form class="form-group">
+							<input type="text" name="Input" placeholder="input">
+						</form>
+					</div>
+
+					<div class="tab-pane container" id="Chart">
+						<div id="container" style="width:100%; height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function () {
+			var myChart = Highcharts.chart('container', {
+				chart: {
+					type: 'bar'
+				},
+				title: {
+					text: 'Fruit Consumption'
+				},
+				xAxis: {
+					categories: ['Apples', 'Bananas', 'Oranges']
+				},
+				yAxis: {
+					title: {
+						text: 'Fruit eaten'
+					}
+				},
+				series: [{
+					name: 'Jane',
+					data: [1, 0, 4]
+				}, {
+					name: 'John',
+					data: [5, 7, 3]
+				}]
+			});
+		});
+	</script>
+</html>
